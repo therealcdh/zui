@@ -184,6 +184,6 @@ func main() {
 		}
 		http.ServeFile(w, r, frontendPath)
 	})
-	log.Println("ZUI Server listening on :8080...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Println("ZUI Server listening on :80...")
+	log.Fatal(http.ListenAndServe(":80", nil))
 }
