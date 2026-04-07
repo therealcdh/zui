@@ -118,13 +118,21 @@ rsync -aAX --info=progress2 \
     --exclude='/media/*' --exclude='/lost+found' \
     --exclude='/cdrom/*' /rofs/. /mnt/.
 
-# Ensure kernel images and other boot files are copied from the live system's overlay
-if [ -d /boot ] && [ "$(ls -A /boot)" ]; then
-    echo "--- Syncing /boot from live overlay ---"
-    rsync -aAX --exclude='/boot/efi/*' /boot/. /mnt/boot/.
-fi
+# 6.5 De-ZUI and Cleanup Custom Live Services
+echo "--- Removing Live-only services and markers ---"
+rm -f /mnt/etc/systemd/system/zui-server.service
+rm -f /mnt/etc/systemd/system/multi-user.target.wants/zui-server.service
+rm -f /mnt/etc/systemd/system/nix-install.service
+rm -f /mnt/etc/systemd/system/multi-user.target.wants/nix-install.service
+rm -f /mnt/etc/systemd/system/nix-verify.service
+rm -f /mnt/etc/systemd/system/multi-user.target.wants/nix-verify.service
+rm -f /mnt/etc/nix-custom-marker
+
+# Revert MOTD to default
+echo "Welcome to Ubuntu 24.04.1 LTS (GNU/Linux $(uname -r) x86_64)" > /mnt/etc/motd
 
 # 7. Finalize (Chroot)
+
 echo "--- Finalizing (Chroot) ---"
 for i in /dev /dev/pts /proc /sys /run; do mount -B "$i" "/mnt$i"; done
 
